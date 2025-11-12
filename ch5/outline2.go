@@ -34,7 +34,7 @@ func helper(s string, start, end int, f func(string) string) string {
 		return s
 	}
 
-	// 如何是目标str，直接进行处理然后继续处理后续的部分即t
+	// 如果是目标str，直接进行处理然后继续处理后续的部分即t
 	if s[start:start+3] == "foo" {
 		t := s[start+3 : end]
 		return f(s[start:start+3]) + helper(t, 0, len(t), f)
