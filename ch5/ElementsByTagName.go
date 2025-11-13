@@ -20,6 +20,7 @@ func ElementsByTagName(doc *html.Node, name ...string) []*html.Node {
 		nameSet[name] = true
 	}
 
+	// 匿名函数可以直接去访问函数外部的局部变量，减少参数的传递
 	var traverse func(n *html.Node)
 	traverse = func(n *html.Node) {
 		if n.Type == html.ElementNode && nameSet[n.Data] {
