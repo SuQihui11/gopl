@@ -1,9 +1,9 @@
 package main
 
 import (
+	"fmt"
+	geometry "gopl/ch6"
 	"html/template"
-	"log"
-	"os"
 	"time"
 )
 
@@ -96,16 +96,21 @@ func main() {
 	//	fmt.Println(err)
 	//}
 
-	//可以通过对信任的HTML字符串使用template.HTML类型来抑制这种自动转义的行为
-	const templ = `<p>A: {{.A}}</p><p>B: {{.B}}</p>`
-	t := template.Must(template.New("escape").Parse(templ))
-	var data struct {
-		A string
-		B template.HTML
-	}
-	data.A = "<b>Hello!</b>"
-	data.B = "<b>Hello!</b>"
-	if err := t.Execute(os.Stdout, data); err != nil {
-		log.Fatal(err)
-	}
+	////可以通过对信任的HTML字符串使用template.HTML类型来抑制这种自动转义的行为
+	//const templ = `<p>A: {{.A}}</p><p>B: {{.B}}</p>`
+	//t := template.Must(template.New("escape").Parse(templ))
+	//var data struct {
+	//	A string
+	//	B template.HTML
+	//}
+	//data.A = "<b>Hello!</b>"
+	//data.B = "<b>Hello!</b>"
+	//if err := t.Execute(os.Stdout, data); err != nil {
+	//	log.Fatal(err)
+	//}
+
+	perim := geometry.Path{{1, 1}, {5, 1}, {5, 4}, {1, 1}}
+	fmt.Println(perim.Distance()) // "12", method of geometry.Path
+
+	fmt.Printf("%T\n", &perim)
 }
