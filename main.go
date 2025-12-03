@@ -1,9 +1,10 @@
 package main
 
 import (
-	"fmt"
-	geometry "gopl/ch6"
+	"gopl/ch7/eval"
 	"html/template"
+	"log"
+	"net/http"
 	"time"
 )
 
@@ -109,8 +110,11 @@ func main() {
 	//	log.Fatal(err)
 	//}
 
-	perim := geometry.Path{{1, 1}, {5, 1}, {5, 4}, {1, 1}}
-	fmt.Println(perim.Distance()) // "12", method of geometry.Path
+	//perim := geometry.Path{{1, 1}, {5, 1}, {5, 4}, {1, 1}}
+	//fmt.Println(perim.Distance()) // "12", method of geometry.Path
+	//
+	//fmt.Printf("%T\n", &perim)
 
-	fmt.Printf("%T\n", &perim)
+	http.HandleFunc("/plot", eval.Polt)
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
