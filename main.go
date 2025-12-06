@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
 	"gopl/ch7/eval"
 	"html/template"
-	"log"
-	"net/http"
+	"os"
+	"strconv"
 	"time"
 )
 
@@ -115,6 +117,52 @@ func main() {
 	//
 	//fmt.Printf("%T\n", &perim)
 
-	http.HandleFunc("/plot", eval.Polt)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	//http.HandleFunc("/plot", eval.Polt)
+	//log.Fatal(http.ListenAndServe(":8080", nil))
+	scanner := bufio.NewScanner(os.Stdin)
+	fmt.Println("请输入一个数学表达式 (例如: sqrt(A*A + B*B)):")
+	fmt.Print("> ")
+
+	// 1. 获取输入的表达式
+	if !scanner.Scan() {
+		return
+	}
+	input := scanner.Text()
+
+	// 2.解析表达式
+	exptr, err := eval.Parse(input)
+	if err != nil {
+		fmt.Println("Re-parse error:", err)
+		return
+	}
+
+	// 3.检查表达式并提取变量
+	vars := make(map[eval.Var]bool)
+	if err = exptr.Check(vars); err != nil {
+		fmt.Println("Check error:", err)
+		return
+	}
+
+	// 4.准备环境变量
+	env := eval.Env{}
+	for v := range vars {
+		for {
+			// 5. 提示用户输入变量对应的值
+			fmt.Printf("请输入变量 %s 的值: ", v)
+			if !scanner.Scan() {
+				return
+			}
+			valStr := scanner.Text()
+			val, err := strconv.ParseFloat(valStr, 64)
+			if err != nil {
+				fmt.Println("输入无效，请输入一个数字。")
+				continue // 优雅处理：让用户重新输入
+			}
+			env[v] = val
+			break
+		}
+	}
+	// 6. 在结果环境中计算表达式
+	result := exptr.Eval(env)
+	fmt.Printf("\n结果: %s => %g\n", input, result)
 }
