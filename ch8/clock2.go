@@ -1,16 +1,22 @@
 package main
 
 import (
+	"flag"
 	"io"
 	"log"
 	"net"
 	"time"
 )
 
-func handleConnWithTimeZone(c net.Conn) {
+var (
+	port     = flag.String("port", ":8080", "The port to listen on")
+	timeZone = flag.String("tz", "local", "The time zone to use")
+)
+
+func handleConnWithTimeZone(c net.Conn, location *time.Location) {
 	defer c.Close()
 	for {
-		_, err := io.WriteString(c, time.Now().Format("15:04:05\n"))
+		_, err := io.WriteString(c, time.Now().In(location).Format("15:04:05\n"))
 		if err != nil {
 			return
 		}
@@ -19,7 +25,13 @@ func handleConnWithTimeZone(c net.Conn) {
 }
 
 func main() {
-	listener, err := net.Listen("tcp", ":8000")
+	flag.Parse()
+	loc, err := time.LoadLocation(*timeZone)
+	if err != nil {
+		log.Fatal("Load time zone failed:", err)
+	}
+
+	listener, err := net.Listen("tcp", "localhost:"+*port)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -29,6 +41,6 @@ func main() {
 			log.Fatal(err)
 			continue
 		}
-		go handleConnWithTimeZone(conn)
+		go handleConnWithTimeZone(conn, loc)
 	}
 }
